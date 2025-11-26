@@ -1,6 +1,6 @@
-# Design Philosophy
+# FOUNDATION
 
-**Created:** 2025-11-23  
+**Created:** 2025-11-26
 **Author:** Masa
 
 ---
