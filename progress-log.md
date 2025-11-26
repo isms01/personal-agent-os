@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2025-11-26
+**Project structure refinement**
+**Decision:**
+Removed config/ and app/config.py - not needed in Sprint1
+**Reasoning:**
+Following "Pragmatic First" principle from FOUNDATION.md:
+- YAGNI (You Aren't Gonna Need It)
+
+
 ## 2025-11-23
 **Implemented:**
 - Created ai-schedule-assistant repository
