@@ -1,0 +1,22 @@
+[project]
+name = "ai-schedule-assistant"
+version = "0.1.0"
+description = "AI scheduling assistant with smart calendar management"
+authors = [
+    {name = "Masahiro Ishizuka",email = "ishimasa01@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic (>=0.75.0,<0.76.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.0.1"
+
