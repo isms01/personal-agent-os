@@ -1,5 +1,25 @@
 # Progress Log
 
+## 2025-12-13
+**Schedule Agent Requirements Definition**
+**Implemented:**
+- Created Schedule Agent requirements document (doc/requirements/schedule_agent.md)
+- Cost optimization decision: Compared Google Maps API vs OSRM, selectedd OSRM for the cost perspective
+
+**Technical Decisions:**
+- Travel time acquisition: OSRM (OpenStreetMap Routing Machine) - Completely free, self-hosted
+- Rationale: Zero cost priority, sufficient accuracy for product-level proof
+
+**Design Approach:**
+- MVP: CUI-based phisical feasibility check
+- Core feature: Travel time consideration between consecutive events, Accept/Reject judgment
+- Recuired inputs: Event name, locatoin, start time, end time
+
+**Time:** 90min
+**Status:** Recuirements definition complete, OSRM setup next
+**Next:** OSRM setup and travel time acquisition engine implementation
+
+
 ## 2025-11-26
 **Project structure refinement**
 **Decision:**
