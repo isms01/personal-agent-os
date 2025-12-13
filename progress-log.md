@@ -11,7 +11,7 @@ Following "Pragmatic First" principle from FOUNDATION.md:
 
 ## 2025-11-23
 **Implemented:**
-- Created ai-schedule-assistant repository
+- Created personal-agent-os repository
 - Wrote FOUNDATION.md documenting design philosophy and motivation
 - Set up project management structure (TODO.md, progress-log.md)
 
