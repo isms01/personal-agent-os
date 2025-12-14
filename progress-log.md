@@ -2,7 +2,8 @@
 
 ## 2025-12-14
 **Finished Docsaurus installation**
-
+**Change this repository from private to public**
+- To show daily updating visibility
 
 ## 2025-12-13
 **Schedule Agent Requirements Definition**
