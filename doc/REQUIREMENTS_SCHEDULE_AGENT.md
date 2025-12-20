@@ -136,8 +136,11 @@ Agent: ✅ Deleted
 ## 6. Success Criteria
 
 - Zero actions without user confirmation
-- Conflict detection rate > 95%
+- All known conflict patterns covered by unit tests
+- Zero false negatives in test cases
 - Clear and simple user interaction
+
+> Note: Removed "Conflict detection rate > 95%" — unmeasurable KPIs should not be included.
 
 ---
 
