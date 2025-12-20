@@ -22,14 +22,12 @@ Humans are capable. However, **no one can sustain consistent performance around 
 
 |Aspect                 |Reality                                                                        |
 |-----------------------|-------------------------------------------------------------------------------|
-|**Variable condition** |Daily performance fluctuates due to health, sleep, and stress                  |
+|**Variable condition** |Daily performance varies due to health, sleep, and stress                  |
 |**Emotional influence**|Motivation, relationships, and personal life affect work output                |
-|**Cognitive limits**   |Attention span and focus are inherently finite                                 |
+|**Cognitive limits**   |Attention span and focus are finite                                 |
 |**Bias**               |The same code may be evaluated differently depending on who reviews it and when|
 
-This is not criticism. **This is what it means to be human.**
-
-The problem is that current development processes do not account for this reality.
+This is a human characteristic. 
 
 ### 1.2 Shortage of Specialized Talent
 
