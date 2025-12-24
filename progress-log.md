@@ -1,5 +1,8 @@
 # Progress Log
 
+## 2025-12-24
+** Modify small fixes**
+
 ## 2025-12-14
 **Finished Docsaurus installation**
 **Change this repository from private to public**
