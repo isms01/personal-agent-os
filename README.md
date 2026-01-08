@@ -1,4 +1,4 @@
-# ai-schedule-assistant
+# personal-agent-os
 
 > "思想は具現化されて初めて意味を持つ" - [FOUNDATION.md](doc/FOUNDATION.md)
 
@@ -42,7 +42,7 @@ poetry run python app/main.py
 
 ## Structure
 ```
-ai-schedule-assistant/
+personal-agent-os/
 ├── app/
 │   ├── agents/    # AI agent implementations
 │   └── tools/     # Tool implementations
