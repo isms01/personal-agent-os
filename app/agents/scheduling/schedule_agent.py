@@ -19,29 +19,31 @@ load_dotenv()
 
 
 def parse_datetime(date_str: str, time_str: str) -> datetime:
-    """日付と時刻を結合してdatetimeオブジェクトを作成"""
-    # 例: "2026-01-05" + "14:00" -> datetime(2026, 1, 5, 14, 0)
+    """
+    Combine date and time strings into a datetime object.
+    Example: "2026-01-05" + "14:00" -> datetime(2026, 1, 5, 14, 0)
+    """
     dt_str = f"{date_str} {time_str}"
     return datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
 
 
 def check_with_claude(new_event: dict, calendar_events: list) -> None:
     """
-    Claude APIを使って新しい予定が実現可能かチェック
+    Use the Claude API to check if the new event can be added without conflicts.
 
     Args:
-        new_event: 新しい予定の情報
-        calendar_events: Google Calendarから取得した既存予定のリスト
+        new_event: New event details
+        calendar_events: Existing events fetched from Google Calendar
     """
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-    # 既存予定を整形
+    # Format existing events
     existing_schedules = ""
     if calendar_events:
         for event in calendar_events:
             existing_schedules += f"- {event['summary']} ({event['start']} - {event['end']}) @ {event.get('location', '場所未指定')}\n"
     else:
-        existing_schedules = "（この日の予定はありません）"
+        existing_schedules = "（No events scheduled for this day.）"
 
     prompt = f"""あなたはスケジュール管理のエキスパートです。
 以下の新しい予定を追加できるか判定してください。
@@ -71,7 +73,7 @@ def check_with_claude(new_event: dict, calendar_events: list) -> None:
     print("\n🤖 Claude が分析中...\n")
 
     message = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-5-20250929",
         max_tokens=1024,
         messages=[{"role": "user", "content": prompt}],
     )
@@ -86,14 +88,16 @@ def check_with_claude(new_event: dict, calendar_events: list) -> None:
 
 
 def main():
+    model = "claude-sonnet-4-5-20250929"
+
     """メイン処理"""
-    user_input = input("予定を入力: ").strip()
+    user_input = input("Enter your event details: ").strip()
 
     if not user_input:
-        print("✗ 予定を入力してください")
+        print("Input required: Please enter the new event you'd like to add.")
         return
 
-    print("\nClaude が予定を解析中...\n")
+    print("\nParsing your event details...\n")
 
     # Claude APIで自然言語から情報を抽出
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
@@ -116,7 +120,7 @@ def main():
 """
 
     message = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model=model,
         max_tokens=512,
         messages=[{"role": "user", "content": parse_prompt}],
     )
