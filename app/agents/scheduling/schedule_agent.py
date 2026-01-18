@@ -1,9 +1,9 @@
 """
-Google Calendarと連携したスケジュール実現性チェッカー
-- 新しい予定の入力
-- Google Calendarから既存予定を取得
-- スケジュール重複チェック
-- 移動時間を考慮した実現可能性チェック
+Schedule feasibility checker integrated with Google Calendar.
+- Accept a new event request from the user
+- Fetch existing events from Google Calendar
+- Check for time overlaps
+- Check feasibility considering travel time between events
 """
 
 import os
