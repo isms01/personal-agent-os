@@ -1,3 +1,4 @@
 .env
 *.pyc
 website/
+.DS_Store
