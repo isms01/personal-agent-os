@@ -1,3 +1,6 @@
+# Class Diagram
+
+```mermaid
 classDiagram
     class PullRequest {
         +String title
@@ -5,7 +8,7 @@ classDiagram
         +Status status
     }
     class Artifact {
-        +Type type (Code/Diagram)
+        +Type type
         +String content
     }
     class Agent {
@@ -17,9 +20,13 @@ classDiagram
         +Severity severity
         +bool isResolved
     }
-
-    PullRequest "1" *-- "many" Artifact
-    PullRequest "1" --> "many" Feedback
+    class Orchestrator {
+        +manage()
+    }
+    
+    PullRequest "1" *-- "many" Artifact : contains
+    PullRequest "1" --> "many" Feedback : receives
     Agent "many" ..> "1" PullRequest : reviews
     Agent "1" --> "many" Feedback : creates
-    Orchestrator --|> Agent : manages others
+    Orchestrator --|> Agent : extends
+```
