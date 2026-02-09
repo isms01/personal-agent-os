@@ -8,14 +8,47 @@ Schedule feasibility checker integrated with Google Calendar.
 
 import os
 from datetime import datetime, timedelta
+from textwrap import dedent
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
 from app.tools.calendar import GoogleCalendarClient
 
-# .envファイルを読み込む
 load_dotenv()
+
+SEPARATOR = "=" * 60
+
+GOOGLE_CALENDAR_SETUP_GUIDE = dedent("""\
+    ✗ Google Calendar 認証エラー
+
+    {sep}
+    Google Calendar APIのセットアップが必要です：
+
+    1. Google Cloud Console にアクセス
+       https://console.cloud.google.com/
+
+    2. プロジェクトを作成または選択
+
+    3. Google Calendar API を有効化
+       https://console.cloud.google.com/apis/library/calendar-json.googleapis.com
+
+    4. OAuth 2.0 クライアントIDを作成
+       - 「認証情報」→「認証情報を作成」→「OAuth クライアントID」
+       - アプリケーションの種類: デスクトップアプリ
+
+    5. credentials.json をダウンロード
+
+    6. 以下のパスに配置:
+       ~/.config/personal-agent-os/credentials.json
+
+    {sep}
+    """).format(sep=SEPARATOR)
+
+
+def print_boxed(*lines: str) -> None:
+    """メッセージをセパレータで囲んで表示する"""
+    print(f"{SEPARATOR}\n" + "\n".join(lines) + f"\n{SEPARATOR}")
 
 
 def parse_datetime(date_str: str, time_str: str) -> datetime:
@@ -79,9 +112,7 @@ def check_with_claude(new_event: dict, calendar_events: list) -> None:
     )
 
     response_text = message.content[0].text
-    print("=" * 60)
-    print(response_text)
-    print("=" * 60)
+    print_boxed(response_text)
 
     # 判定結果を返す
     return "Accept" in response_text or "accept" in response_text
@@ -210,38 +241,15 @@ def main():
             )
 
             event_link = created_event.get("htmlLink", "")
-            print("=" * 60)
-            print("✓ カレンダーに登録しました！")
-            print(f"リンク: {event_link}")
-            print("=" * 60)
+            print_boxed(
+                "✓ カレンダーに登録しました！",
+                f"リンク: {event_link}",
+            )
         else:
             print("\n⚠️  カレンダーへの登録はスキップされました")
 
-    except FileNotFoundError as e:
-        print(f"✗ Google Calendar 認証エラー\n")
-        print("=" * 60)
-        print("Google Calendar APIのセットアップが必要です：")
-        print()
-        print("1. Google Cloud Console にアクセス")
-        print("   https://console.cloud.google.com/")
-        print()
-        print("2. プロジェクトを作成または選択")
-        print()
-        print("3. Google Calendar API を有効化")
-        print(
-            "   https://console.cloud.google.com/apis/library/calendar-json.googleapis.com"
-        )
-        print()
-        print("4. OAuth 2.0 クライアントIDを作成")
-        print("   - 「認証情報」→「認証情報を作成」→「OAuth クライアントID」")
-        print("   - アプリケーションの種類: デスクトップアプリ")
-        print()
-        print("5. credentials.json をダウンロード")
-        print()
-        print("6. 以下のパスに配置:")
-        print("   ~/.config/personal-agent-os/credentials.json")
-        print()
-        print("=" * 60)
+    except FileNotFoundError:
+        print(GOOGLE_CALENDAR_SETUP_GUIDE)
     except Exception as e:
         print(f"✗ エラー: {e}")
         import traceback
