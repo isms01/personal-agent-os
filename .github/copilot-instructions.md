@@ -33,6 +33,6 @@
 * Respond in **Japanese** unless code/technical terms require English.
 
 ## Generation constraints
-* **Max 100 lines per suggestion** (small PRs are easier to review).
+* **Max 300 lines per suggestion** (small PRs are easier to review).
 * Split large features into multiple steps if needed.
 * Prioritize readability over cleverness.
