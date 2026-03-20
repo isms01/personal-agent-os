@@ -2,8 +2,6 @@
 
 > "思想は具現化されて初めて意味を持つ" - [FOUNDATION.md](doc/FOUNDATION.md)
 
-AI scheduling assistant with smart calendar management.
-
 ## Vision
 
 Reduce human "task work" and enable focus on true value creation through AI agent automation.
@@ -60,4 +58,3 @@ personal-agent-os/
 ## License
 
 TBD
-EOF
