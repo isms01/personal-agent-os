@@ -13,7 +13,7 @@ classDiagram
     }
     class Agent {
         +Role role
-        +evaluate(Artifact, Intent)
+        +evaluate(Artifact)
     }
     class Feedback {
         +String comment
