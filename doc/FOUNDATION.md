@@ -16,7 +16,7 @@ People should spend time on crativity, judgment, and problem-solving,
 but much time is consumed by routine "task work".
 
 ### Approach
-Build AI agent that autonomously handles routine tasks or accelerates workflows,
+Build an AI agent that autonomously handles routine tasks or accelerates workflows,
 freeing humans for higher-value work.
 
 ---
