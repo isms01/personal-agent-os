@@ -11,8 +11,10 @@ Google Calendar と連携し、自然言語でイベントの追加・実行可�
 
 ## 使い方
 
+依存関係のインストール後、プロジェクトルートから以下を実行：
+
 ```bash
-python -m app.agents.scheduling.schedule_agent
+poetry run python -m app.agents.scheduling.schedule_agent
 ```
 
 実行すると入力プロンプトが表示されるので、自然言語でイベントを入力する。
@@ -23,13 +25,27 @@ Enter your event details: 明日の14時から田中さんとミーティング1
 
 ## セットアップ
 
-### 必要な環境変数
+### 1. 依存関係のインストール
 
-`.env` ファイルに以下を設定：
+```bash
+poetry install
+```
+
+### 2. 必要な環境変数
+
+プロジェクトルート（`pyproject.toml` と同じディレクトリ）に `.env` ファイルを作成し、以下を設定：
 
 ```
 ANTHROPIC_API_KEY=your_api_key
 ```
+
+または、環境変数として直接 export しても動作する：
+
+```bash
+export ANTHROPIC_API_KEY=your_api_key
+```
+
+> **Note:** `load_dotenv()` はカレントディレクトリの `.env` を読み込むため、**プロジェクトルートから実行**してください。
 
 ### Google Calendar API 認証
 
