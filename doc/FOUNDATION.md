@@ -8,7 +8,6 @@
 ## 🎯 Why This Project
 
 ### Personal Motivation
-- Career transition to foreign companies (Microsoft, Google, AWS, AI startups)
 - Prove my skills without relying on company brand
 - Enable people to focus on real value creation by reducing "task work".
 
@@ -17,7 +16,7 @@ People should spend time on crativity, judgment, and problem-solving,
 but much time is consumed by routine "task work".
 
 ### Approach
-Build AI agent that autonomously handles routine tasks.
+Build an AI agent that autonomously handles routine tasks or accelerates workflows,
 freeing humans for higher-value work.
 
 ---
