@@ -50,11 +50,3 @@ personal-agent-os/
 ├── TODO.md
 └── progress-log.md
 ```
-
-## Timeline
-
-12 weeks, 6 sprints for career portfolio
-
-## License
-
-TBD

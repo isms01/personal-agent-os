@@ -6,7 +6,7 @@ authors = [{ name = "Masahiro Ishizuka", email = "ishimasa01@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "anthropic (>=0.75.0,<0.76.0)",
+    "anthropic (>=0.75.0,<1.0.0)",
     "python-dotenv (>=1.2.1,<2.0.0)",
     "google-api-python-client (>=2.100.0,<3.0.0)",
     "google-auth-httplib2 (>=0.2.0,<1.0.0)",
