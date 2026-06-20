@@ -90,9 +90,9 @@ def check_with_claude(
 以下の新しい予定を追加できるか判定してください。
 
 【追加したい予定】
-- 案件名: {new_event['summary']}
-- 日時: {new_event['start']} - {new_event['end']}
-- 場所: {new_event['location']}
+- 案件名: {new_event["summary"]}
+- 日時: {new_event["start"]} - {new_event["end"]}
+- 場所: {new_event["location"]}
 
 【既存の予定（Google Calendar）】
 {existing_schedules}
@@ -186,8 +186,7 @@ def main() -> None:
         print("✓ 解析完了:")
         print(f"  案件名: {event_data['summary']}")
         date_range = (
-            f"{event_data['date']}"
-            f" {event_data['start_time']}-{event_data['end_time']}"
+            f"{event_data['date']} {event_data['start_time']}-{event_data['end_time']}"
         )
         print(f"  日時: {date_range}")
         print(f"  場所: {event_data['location']}\n")

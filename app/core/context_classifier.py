@@ -76,9 +76,7 @@ _CLASSIFY_SYSTEM_PROMPT = """\
 """
 
 
-def classify_context(
-    user_input: str, mode_override: str | None = None
-) -> InputContext:
+def classify_context(user_input: str, mode_override: str | None = None) -> InputContext:
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     user_content = f"ユーザー入力:\n{user_input}"
