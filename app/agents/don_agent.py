@@ -13,8 +13,12 @@ from anthropic.types import TextBlock
 from dotenv import load_dotenv
 
 from app.core.context_classifier import InputContext, Topic, classify_context
-from app.core.don_principles import (ALL_PRINCIPLES, PRINCIPLE_LINKAGE_MAP,
-                                     STRUCTURAL_PRINCIPLES, Principle)
+from app.core.don_principles import (
+    ALL_PRINCIPLES,
+    PRINCIPLE_LINKAGE_MAP,
+    STRUCTURAL_PRINCIPLES,
+    Principle,
+)
 
 load_dotenv()
 
