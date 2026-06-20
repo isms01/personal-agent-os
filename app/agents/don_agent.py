@@ -13,12 +13,8 @@ from anthropic.types import TextBlock
 from dotenv import load_dotenv
 
 from app.core.context_classifier import InputContext, Topic, classify_context
-from app.core.don_principles import (
-    ALL_PRINCIPLES,
-    PRINCIPLE_LINKAGE_MAP,
-    STRUCTURAL_PRINCIPLES,
-    Principle,
-)
+from app.core.don_principles import (ALL_PRINCIPLES, PRINCIPLE_LINKAGE_MAP,
+                                     STRUCTURAL_PRINCIPLES, Principle)
 
 load_dotenv()
 
@@ -291,13 +287,27 @@ def main() -> None:
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     print("どうしました。")
-    print("（入力後、Ctrl+D で送信）")
+    print("（空行を 2 回続けると送信）")
     print()
 
     lines: list[str] = []
+    previous_was_blank = False
     try:
         while True:
             line = input()
+            if line == "":
+                if previous_was_blank:
+                    print()
+                    print("入力を受け付けました。")
+                    print("Don 実行中...")
+                    break
+                previous_was_blank = True
+                continue
+
+            if previous_was_blank:
+                # Keep a single blank line when user is adding paragraph breaks.
+                lines.append("")
+                previous_was_blank = False
             lines.append(line)
     except EOFError:
         pass
