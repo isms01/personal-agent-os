@@ -24,7 +24,10 @@ ruff = "^0.15.18"
 mypy = "^2.1.0"
 
 [tool.poetry]
-package-mode = false
+packages = [{include = "app"}]
+
+[project.scripts]
+don = "app.agents.don_agent:main"
 
 # pyproject.toml
 [tool.ruff]
