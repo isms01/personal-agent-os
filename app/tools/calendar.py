@@ -6,10 +6,9 @@ import os
 import pickle
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import TypedDict
 
 from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
@@ -17,15 +16,32 @@ from googleapiclient.discovery import build
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 
+class EventTime(TypedDict, total=False):
+    dateTime: str
+    date: str
+    timeZone: str
+
+
+class CalendarEvent(TypedDict, total=False):
+    summary: str
+    start: EventTime
+    end: EventTime
+    location: str
+    description: str
+    htmlLink: str
+    id: str
+
+
 class GoogleCalendarClient:
     """Google Calendar API クライアント"""
 
-    def __init__(self, credentials_path: Optional[str] = None):
+    def __init__(self, credentials_path: str | None = None):
         """
         初期化
 
         Args:
-            credentials_path: credentials.json のパス（省略時は ~/.config/personal-agent-os/credentials.json）
+            credentials_path: credentials.json のパス
+                （省略時は ~/.config/personal-agent-os/credentials.json）
         """
         # 認証情報のパス
         if credentials_path is None:
@@ -82,11 +98,11 @@ class GoogleCalendarClient:
 
     def get_events(
         self,
-        time_min: Optional[datetime] = None,
-        time_max: Optional[datetime] = None,
+        time_min: datetime | None = None,
+        time_max: datetime | None = None,
         max_results: int = 10,
         calendar_id: str = "primary",
-    ) -> list:
+    ) -> list[CalendarEvent]:
         """
         イベントを取得
 
@@ -122,10 +138,10 @@ class GoogleCalendarClient:
         summary: str,
         start_time: datetime,
         end_time: datetime,
-        location: Optional[str] = None,
-        description: Optional[str] = None,
+        location: str | None = None,
+        description: str | None = None,
         calendar_id: str = "primary",
-    ) -> dict:
+    ) -> CalendarEvent:
         """
         イベントを作成
 
