@@ -1,0 +1,27 @@
+# Runs locally on every `git commit`. Blocks the commit if any check fails.
+# Setup (one time):
+#   pip install pre-commit
+#   pre-commit install
+#
+# A blocked commit costs ZERO API tokens — failures are caught locally,
+# before any round-trip with Claude Code, which keeps fix-loops short.
+#
+# Do NOT bypass with `git commit --no-verify`. Bypassing defeats the
+# entire verification guarantee.
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      # Lint (auto-fixes what it safely can, then blocks on the rest)
+      - id: ruff
+        args: [--fix]
+      # Format
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.1
+    hooks:
+      - id: mypy
+        # strict config is read from pyproject.toml
+        additional_dependencies: []
