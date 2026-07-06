@@ -68,9 +68,12 @@ def _format_principles(principles: list[Principle]) -> str:
 
 
 def _parse_principle_ids(raw: str) -> list[str]:
-    if raw.startswith("```"):
-        raw = raw[raw.find("{") : raw.rfind("}") + 1]
-    data = json.loads(raw)
+    try:
+        if raw.startswith("```"):
+            raw = raw[raw.find("{") : raw.rfind("}") + 1]
+        data = json.loads(raw)
+    except (json.JSONDecodeError, TypeError):
+        return []
     return [pid for pid in data.get("selected_ids", []) if pid in ALL_PRINCIPLES]
 
 
