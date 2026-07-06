@@ -272,10 +272,11 @@ def generate_response(
     )
 
     block = response.content[0]
-    if not isinstance(block, TextBlock):
+    raw = getattr(block, "text", None)
+    if not isinstance(raw, str):
         raise ValueError(f"Unexpected response block type: {type(block)}")
 
-    return block.text.strip()
+    return raw.strip()
 
 
 # --------------------------------------------------------------------------
