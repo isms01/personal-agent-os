@@ -91,9 +91,10 @@ def classify_context(user_input: str, mode_override: str | None = None) -> Input
     )
 
     block = response.content[0]
-    if not isinstance(block, TextBlock):
+    raw = getattr(block, "text", None)
+    if not isinstance(raw, str):
         raise ValueError(f"Unexpected response block type: {type(block)}")
-    raw = block.text.strip()
+    raw = raw.strip()
 
     # ```json ``` ブロックへの対応
     if raw.startswith("```"):
