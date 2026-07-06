@@ -9,7 +9,6 @@ import os
 import re
 
 from anthropic import Anthropic
-from anthropic.types import TextBlock
 from dotenv import load_dotenv
 
 from app.core.context_classifier import InputContext, Topic, classify_context
@@ -67,14 +66,14 @@ def _format_principles(principles: list[Principle]) -> str:
     return "\n\n".join(parts)
 
 
-def _parse_principle_ids(raw: str) -> list[str]:
+def _parse_principle_ids(raw: str, allowed_ids: set[str]) -> list[str]:
     try:
         if raw.startswith("```"):
             raw = raw[raw.find("{") : raw.rfind("}") + 1]
         data = json.loads(raw)
     except (json.JSONDecodeError, TypeError):
         return []
-    return [pid for pid in data.get("selected_ids", []) if pid in ALL_PRINCIPLES]
+    return [pid for pid in data.get("selected_ids", []) if pid in allowed_ids]
 
 
 def select_structural_principles(
@@ -100,7 +99,9 @@ def select_structural_principles(
     if not isinstance(raw, str):
         return []
 
-    return [ALL_PRINCIPLES[pid] for pid in _parse_principle_ids(raw.strip())]
+    structural_ids = {p.id for p in STRUCTURAL_PRINCIPLES}
+    parsed = _parse_principle_ids(raw.strip(), structural_ids)
+    return [ALL_PRINCIPLES[pid] for pid in parsed]
 
 
 def select_practical_principles(
@@ -141,7 +142,8 @@ def select_practical_principles(
     if not isinstance(raw, str):
         return []
 
-    return [ALL_PRINCIPLES[pid] for pid in _parse_principle_ids(raw.strip())]
+    parsed = _parse_principle_ids(raw.strip(), candidate_ids)
+    return [ALL_PRINCIPLES[pid] for pid in parsed]
 
 
 # --------------------------------------------------------------------------

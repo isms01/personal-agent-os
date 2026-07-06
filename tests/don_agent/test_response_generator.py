@@ -76,13 +76,13 @@ def test_preprocess_keeps_double_newline() -> None:
 
 def test_parse_principle_ids_plain_json() -> None:
     raw = '{"selected_ids": ["S1", "S3"], "reason": "理由"}'
-    ids = _parse_principle_ids(raw)
+    ids = _parse_principle_ids(raw, set(ALL_PRINCIPLES.keys()))
     assert ids == ["S1", "S3"]
 
 
 def test_parse_principle_ids_filters_invalid() -> None:
     raw = '{"selected_ids": ["S1", "INVALID"], "reason": "理由"}'
-    ids = _parse_principle_ids(raw)
+    ids = _parse_principle_ids(raw, set(ALL_PRINCIPLES.keys()))
     assert ids == ["S1"]
 
 

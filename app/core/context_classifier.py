@@ -2,7 +2,6 @@ import json
 import os
 
 from anthropic import Anthropic
-from anthropic.types import TextBlock
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
