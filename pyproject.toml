@@ -20,9 +20,43 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.1"
+ruff = "^0.15.18"
+mypy = "^2.1.0"
 
 [tool.poetry]
-package-mode = false
+packages = [{include = "app"}]
 
+[project.scripts]
+don = "app.agents.don_agent:main"
+
+# pyproject.toml
 [tool.ruff]
-line-length = 120
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+# E  = pycodestyle errors (PEP8 style)
+# F  = Pyflakes (unused imports/vars, undefined names)
+# I  = isort (import ordering)
+# UP = pyupgrade (modernize syntax to py312)
+# B  = flake8-bugbear (likely-bug patterns)
+# SIM = flake8-simplify (redundant constructs)
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+# strict already implies disallow_untyped_defs, no_implicit_optional, etc.
+# Listed explicitly below only as intent documentation:
+warn_return_any = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["google.*", "googleapiclient.*", "google_auth_oauthlib.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "app.tools.calendar"
+disallow_untyped_defs = false
+disallow_untyped_calls = false
+warn_return_any = false

@@ -6,11 +6,13 @@ Schedule feasibility checker integrated with Google Calendar.
 - Check feasibility considering travel time between events
 """
 
+import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from textwrap import dedent
 
 from anthropic import Anthropic
+from anthropic.types import TextBlock
 from dotenv import load_dotenv
 
 from app.tools.calendar import GoogleCalendarClient
@@ -60,7 +62,9 @@ def parse_datetime(date_str: str, time_str: str) -> datetime:
     return datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
 
 
-def check_with_claude(new_event: dict, calendar_events: list) -> None:
+def check_with_claude(
+    new_event: dict[str, str], calendar_events: list[dict[str, str]]
+) -> bool:
     """
     Use the Claude API to check if the new event can be added without conflicts.
 
@@ -74,7 +78,11 @@ def check_with_claude(new_event: dict, calendar_events: list) -> None:
     existing_schedules = ""
     if calendar_events:
         for event in calendar_events:
-            existing_schedules += f"- {event['summary']} ({event['start']} - {event['end']}) @ {event.get('location', '場所未指定')}\n"
+            location = event.get("location", "場所未指定")
+            existing_schedules += (
+                f"- {event['summary']} ({event['start']} - {event['end']})"
+                f" @ {location}\n"
+            )
     else:
         existing_schedules = "（No events scheduled for this day.）"
 
@@ -82,9 +90,9 @@ def check_with_claude(new_event: dict, calendar_events: list) -> None:
 以下の新しい予定を追加できるか判定してください。
 
 【追加したい予定】
-- 案件名: {new_event['summary']}
-- 日時: {new_event['start']} - {new_event['end']}
-- 場所: {new_event['location']}
+- 案件名: {new_event["summary"]}
+- 日時: {new_event["start"]} - {new_event["end"]}
+- 場所: {new_event["location"]}
 
 【既存の予定（Google Calendar）】
 {existing_schedules}
@@ -111,17 +119,19 @@ def check_with_claude(new_event: dict, calendar_events: list) -> None:
         messages=[{"role": "user", "content": prompt}],
     )
 
-    response_text = message.content[0].text
+    block = message.content[0]
+    if not isinstance(block, TextBlock):
+        raise ValueError(f"Unexpected response block type: {type(block)}")
+    response_text = block.text
     print_boxed(response_text)
 
-    # 判定結果を返す
     return "Accept" in response_text or "accept" in response_text
 
 
-def main():
+def main() -> None:
+    """メイン処理"""
     model = "claude-sonnet-4-5-20250929"
 
-    """メイン処理"""
     user_input = input("Enter your event details: ").strip()
 
     if not user_input:
@@ -132,6 +142,7 @@ def main():
 
     # Claude APIで自然言語から情報を抽出
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    today = datetime.now().strftime("%Y-%m-%d")
     parse_prompt = f"""以下の自然言語から予定情報を抽出してください。
 
 入力: {user_input}
@@ -145,7 +156,8 @@ def main():
     "location": "場所"
 }}
 
-- 「明日」「今日」などの相対表現は具体的な日付に変換してください（今日は{datetime.now().strftime('%Y-%m-%d')}です）
+- 「明日」「今日」などの相対表現は具体的な日付に変換してください
+  （今日は{today}です）
 - 終了時刻が指定されていない場合は、開始時刻から1時間後にしてください
 - 場所が指定されていない場合は "" としてください
 """
@@ -156,10 +168,10 @@ def main():
         messages=[{"role": "user", "content": parse_prompt}],
     )
 
-    # JSONを抽出
-    import json
-
-    response_text = message.content[0].text
+    block = message.content[0]
+    if not isinstance(block, TextBlock):
+        raise ValueError(f"Unexpected response block type: {type(block)}")
+    response_text = block.text
     try:
         # ```json ``` で囲まれている場合を考慮
         if "```json" in response_text:
@@ -171,11 +183,12 @@ def main():
 
         event_data = json.loads(json_str)
 
-        print(f"✓ 解析完了:")
+        print("✓ 解析完了:")
         print(f"  案件名: {event_data['summary']}")
-        print(
-            f"  日時: {event_data['date']} {event_data['start_time']}-{event_data['end_time']}"
+        date_range = (
+            f"{event_data['date']} {event_data['start_time']}-{event_data['end_time']}"
         )
+        print(f"  日時: {date_range}")
         print(f"  場所: {event_data['location']}\n")
 
     except (json.JSONDecodeError, KeyError) as e:
@@ -191,7 +204,7 @@ def main():
         print(f"✗ 日付・時刻の形式が正しくありません: {e}")
         return
 
-    new_event = {
+    new_event: dict[str, str] = {
         "summary": event_data["summary"],
         "start": start_dt.strftime("%Y-%m-%d %H:%M"),
         "end": end_dt.strftime("%Y-%m-%d %H:%M"),
@@ -213,13 +226,15 @@ def main():
         )
 
         # イベントを整形
-        calendar_events = []
+        calendar_events: list[dict[str, str]] = []
         for event in events:
+            start = event.get("start") or {"dateTime": "", "date": ""}
+            end = event.get("end") or {"dateTime": "", "date": ""}
             calendar_events.append(
                 {
                     "summary": event.get("summary", "無題"),
-                    "start": event["start"].get("dateTime", event["start"].get("date")),
-                    "end": event["end"].get("dateTime", event["end"].get("date")),
+                    "start": start.get("dateTime", start.get("date", "")),
+                    "end": end.get("dateTime", end.get("date", "")),
                     "location": event.get("location", "場所未指定"),
                 }
             )

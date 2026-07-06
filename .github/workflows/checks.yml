@@ -1,0 +1,30 @@
+name: checks
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+    lint-and-type:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Install dependencies
+              run: |
+                  pip install poetry
+                  poetry install --with dev
+
+            - name: ruff (lint)
+              run: poetry run ruff check .
+
+            - name: ruff (format check)
+              run: poetry run ruff format --check .
+
+            - name: mypy (strict)
+              run: poetry run mypy .
