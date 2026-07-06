@@ -3,27 +3,23 @@
 > "思想は具現化されて初めて意味を持つ" - [FOUNDATION.md](doc/FOUNDATION.md)
 
 ## Vision
+> Agents should not be tools. Agents should be team members.
 
-Reduce human "task work" and enable focus on true value creation through AI agent automation.
+Build a system where AI agents operate as a structured team — with roles, hierarchy,
+and long-term memory — enabling a single engineer to achieve the output of a full
+development team, while reducing routine "task work" so humans can focus on true
+value creation.
 
-See [FOUNDATION.md](doc/FOUNDATION.md) for design philosophy.
-
-## Development Status
-
-**Current:** Sprint 1 - Basic Chat Assistant  
-**Progress:** [TODO.md](TODO.md) | [progress-log.md](progress-log.md)
-
-## Core Values
-
-1. **Pragmatic First** - 実用性優先
-2. **Learn By Building** - 手を動かして理解
-3. **Explainability** - 説明可能性
+See [FOUNDATION.md](doc/FOUNDATION.md) for design philosophy and
+[VISIONS.md](doc/VISIONS.md) for the full Agent Organization vision.
 
 ## Tech Stack
 
 - Python 3.12
 - Claude API (Anthropic)
+- Google Calendar API (schedule agent integration)
 - Poetry
+- ruff / mypy (strict) / pytest — lint, type check, test
 
 ## Setup
 ```bash
@@ -31,22 +27,23 @@ See [FOUNDATION.md](doc/FOUNDATION.md) for design philosophy.
 poetry install
 
 # Configure API key
-cp .env.example .env
-# Edit .env with your ANTHROPIC_API_KEY
+# Create .env with ANTHROPIC_API_KEY=your_key_here
 
-# Run (coming soon)
-poetry run python app/main.py
+# Run Don Agent
+poetry run don
 ```
 
 ## Structure
 ```
 personal-agent-os/
 ├── app/
-│   ├── agents/    # AI agent implementations
-│   └── tools/     # Tool implementations
-├── tests/         # Unit tests
-├── doc/           # Documentation
-│   └── FOUNDATION.md
+│   ├── agents/          # Agent implementations (Don Agent, Schedule Agent)
+│   ├── core/            # Context classification, principles
+│   └── tools/           # External integrations (calendar, etc.)
+├── tests/                # Unit tests
+├── doc/                  # Design docs, vision, requirements
+├── .github/workflows/    # CI (lint, type check)
+├── CLAUDE.md             # Development rules
 ├── TODO.md
 └── progress-log.md
 ```
