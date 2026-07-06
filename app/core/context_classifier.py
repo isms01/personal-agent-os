@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 load_dotenv()
 
-MODEL = "claude-sonnet-4-6"
+MODEL = "claude-sonnet-5"
 
 VALID_SUBMODES = {
     "venting",
@@ -75,16 +75,24 @@ _CLASSIFY_SYSTEM_PROMPT = """\
 """
 
 
-def classify_context(user_input: str, mode_override: str | None = None) -> InputContext:
+def classify_context(
+    user_input: str,
+    mode_override: str | None = None,
+    past_records_text: str = "",
+) -> InputContext:
     client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     user_content = f"ユーザー入力:\n{user_input}"
     if mode_override:
         user_content += f"\n\nmode 指定: {mode_override}"
+    if past_records_text:
+        user_content += f"\n\n{past_records_text}"
 
     response = client.messages.create(
         model=MODEL,
         max_tokens=1024,
+        # JSON のみを返す呼び出し。思考トークンで出力が切れないよう思考オフ
+        thinking={"type": "disabled"},
         system=_CLASSIFY_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_content}],
     )

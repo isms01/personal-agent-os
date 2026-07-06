@@ -145,6 +145,30 @@ def test_search_keywords_included(mock_anthropic_class: MagicMock) -> None:
 
 
 @patch("app.core.context_classifier.Anthropic")
+def test_past_records_included_in_prompt(mock_anthropic_class: MagicMock) -> None:
+    create = mock_anthropic_class.return_value.messages.create
+    create.return_value = _make_mock_response(_VENTING_RESPONSE)
+
+    past_text = "## 過去の相談記録\n要点: 上司との衝突"
+    classify_context("上司の件、報告したい", past_records_text=past_text)
+
+    user_content = create.call_args.kwargs["messages"][0]["content"]
+    assert "過去の相談記録" in user_content
+    assert "上司との衝突" in user_content
+
+
+@patch("app.core.context_classifier.Anthropic")
+def test_past_records_omitted_when_empty(mock_anthropic_class: MagicMock) -> None:
+    create = mock_anthropic_class.return_value.messages.create
+    create.return_value = _make_mock_response(_VENTING_RESPONSE)
+
+    classify_context("つらい", past_records_text="")
+
+    user_content = create.call_args.kwargs["messages"][0]["content"]
+    assert "過去の相談記録" not in user_content
+
+
+@patch("app.core.context_classifier.Anthropic")
 def test_topic_model_fields(mock_anthropic_class: MagicMock) -> None:
     create = mock_anthropic_class.return_value.messages.create
     create.return_value = _make_mock_response(_VENTING_RESPONSE)

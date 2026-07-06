@@ -206,6 +206,41 @@ def test_generate_response_with_pending_topics() -> None:
     assert "持ち越しトピックA" in user_content
 
 
+def test_generate_response_includes_past_records() -> None:
+    client = _make_client("久しぶりだな。上司の件はどうなった。")
+    context = _make_context(["venting"])
+    past_text = "## 過去の相談記録（古い順）\n要点: 上司との衝突\n宿題: 面談の結果"
+
+    generate_response(
+        client,
+        "上司の件、報告があります",
+        context,
+        [],
+        [],
+        context.topics[0],
+        [],
+        past_records_text=past_text,
+    )
+
+    call_kwargs = client.messages.create.call_args.kwargs
+    user_content = call_kwargs["messages"][0]["content"]
+    assert "過去の相談記録" in user_content
+    assert "面談の結果" in user_content
+
+
+def test_generate_response_omits_past_section_when_empty() -> None:
+    client = _make_client("応答")
+    context = _make_context(["venting"])
+
+    generate_response(
+        client, "初回の相談", context, [], [], context.topics[0], []
+    )
+
+    call_kwargs = client.messages.create.call_args.kwargs
+    user_content = call_kwargs["messages"][0]["content"]
+    assert "過去の相談記録" not in user_content
+
+
 def test_generate_response_out_of_scope() -> None:
     client = _make_client("領分外の相談ですね。")
     context = _make_context(["out_of_scope_technical"], emotional_temperature="cold")

@@ -12,6 +12,12 @@ from anthropic import Anthropic
 from dotenv import load_dotenv
 
 from app.core.context_classifier import InputContext, Topic, classify_context
+from app.core.don_memory import (
+    format_records,
+    load_recent_records,
+    save_record,
+    summarize_conversation,
+)
 from app.core.don_principles import (
     ALL_PRINCIPLES,
     PRINCIPLE_LINKAGE_MAP,
@@ -21,8 +27,8 @@ from app.core.don_principles import (
 
 load_dotenv()
 
-MODEL = "claude-sonnet-4-6"
-MAX_TOKENS_RESPONSE = 2000
+MODEL = "claude-sonnet-5"
+MAX_TOKENS_RESPONSE = 4000
 
 _DIFFICULT_SUBMODES = {"venting", "lost", "conflict", "decision"}
 
@@ -91,6 +97,8 @@ def select_structural_principles(
     response = client.messages.create(
         model=MODEL,
         max_tokens=256,
+        # JSON のみを返す呼び出し。思考トークンで出力が切れないよう思考オフ
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
     )
 
@@ -134,6 +142,8 @@ def select_practical_principles(
     response = client.messages.create(
         model=MODEL,
         max_tokens=256,
+        # JSON のみを返す呼び出し。思考トークンで出力が切れないよう思考オフ
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
     )
 
@@ -218,6 +228,7 @@ def generate_response(
     practical_principles: list[Principle],
     main_difficult_topic: Topic | None,
     pending_topic_names: list[str],
+    past_records_text: str = "",
 ) -> str:
     out_of_scope = [t for t in context.topics if t.submode.startswith("out_of_scope")]
     celebration = [t for t in context.topics if t.submode == "celebration"]
@@ -252,11 +263,20 @@ def generate_response(
             "自動分類を優先した。応答の中で自然に言及すること）"
         )
 
+    past_lines: list[str] = []
+    if past_records_text:
+        past_lines = [
+            f"\n{past_records_text}",
+            "（過去の記録は文脈理解に使う。宿題への答えが今回の入力に"
+            "含まれていたら、覚えていたことが伝わるよう自然に言及する）",
+        ]
+
     fired_section = fired_lines if fired_lines else ["（なし）"]
     user_prompt = "\n".join(
         [
             f"ユーザーの入力:\n{user_input}",
             f"\n文脈: 感情温度={context.emotional_temperature} / {context.summary}",
+            *past_lines,
             "\n## トピック",
             *topic_lines,
             "\n## 発火した原則",
@@ -269,16 +289,18 @@ def generate_response(
     response = client.messages.create(
         model=MODEL,
         max_tokens=MAX_TOKENS_RESPONSE,
+        # 応答の深みを優先し適応的思考を有効化（先頭に thinking ブロックが入る）
+        thinking={"type": "adaptive"},
         system=_DON_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_prompt}],
     )
 
-    block = response.content[0]
-    raw = getattr(block, "text", None)
-    if not isinstance(raw, str):
-        raise ValueError(f"Unexpected response block type: {type(block)}")
+    for block in response.content:
+        raw = getattr(block, "text", None)
+        if isinstance(raw, str):
+            return raw.strip()
 
-    return raw.strip()
+    raise ValueError("No text block in response")
 
 
 # --------------------------------------------------------------------------
@@ -331,8 +353,11 @@ def main() -> None:
     if not user_input:
         return
 
-    # Step 2: 文脈分類
-    context = classify_context(user_input, mode_override=args.mode)
+    # Step 2: 過去記録の読み込みと文脈分類
+    past_records_text = format_records(load_recent_records())
+    context = classify_context(
+        user_input, mode_override=args.mode, past_records_text=past_records_text
+    )
 
     # Step 3: 困難トピックの特定と原則発火
     difficult_topics = sorted(
@@ -351,13 +376,27 @@ def main() -> None:
 
     # Step 4: 応答生成
     response_text = generate_response(
-        client, user_input, context, structural, practical, main_topic, pending_names
+        client,
+        user_input,
+        context,
+        structural,
+        practical,
+        main_topic,
+        pending_names,
+        past_records_text=past_records_text,
     )
 
     # Step 5: 出力
     print()
     print(response_text)
     print()
+
+    # Step 6: 会話の記録（失敗しても会話体験は壊さない）
+    try:
+        record = summarize_conversation(client, user_input, response_text, context)
+        save_record(record)
+    except Exception:
+        print("（今回の会話の記録に失敗した。次回は今日の話を覚えていない）")
 
 
 if __name__ == "__main__":
