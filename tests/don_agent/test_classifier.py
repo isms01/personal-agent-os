@@ -94,7 +94,7 @@ def test_classify_out_of_scope(mock_anthropic_class: MagicMock) -> None:
 
 
 @patch("app.core.context_classifier.Anthropic")
-def test_mode_override_no_conflict(mock_anthropic_class: MagicMock) -> None:
+def test_mode_override_conflict(mock_anthropic_class: MagicMock) -> None:
     # mode=celebration を指定したが LLM は venting と判定
     # → 矛盾なので override_occurred=True
     response_data: dict[str, object] = {
