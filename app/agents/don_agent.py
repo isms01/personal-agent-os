@@ -96,10 +96,11 @@ def select_structural_principles(
     )
 
     block = response.content[0]
-    if not isinstance(block, TextBlock):
+    raw = getattr(block, "text", None)
+    if not isinstance(raw, str):
         return []
 
-    return [ALL_PRINCIPLES[pid] for pid in _parse_principle_ids(block.text.strip())]
+    return [ALL_PRINCIPLES[pid] for pid in _parse_principle_ids(raw.strip())]
 
 
 def select_practical_principles(
