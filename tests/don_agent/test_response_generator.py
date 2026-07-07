@@ -232,9 +232,7 @@ def test_generate_response_omits_past_section_when_empty() -> None:
     client = _make_client("応答")
     context = _make_context(["venting"])
 
-    generate_response(
-        client, "初回の相談", context, [], [], context.topics[0], []
-    )
+    generate_response(client, "初回の相談", context, [], [], context.topics[0], [])
 
     call_kwargs = client.messages.create.call_args.kwargs
     user_content = call_kwargs["messages"][0]["content"]
