@@ -13,7 +13,9 @@ from pydantic import BaseModel, ValidationError
 from app.core.context_classifier import InputContext
 
 MODEL = "claude-sonnet-5"
-DEFAULT_MEMORY_DIR = Path("logs/don_memory")
+# 実行時の cwd に依存しないよう、このファイル基準でプロジェクトルートに固定する
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+DEFAULT_MEMORY_DIR = _PROJECT_ROOT / "logs" / "don_memory"
 DEFAULT_LOAD_COUNT = 10
 
 JST = timezone(timedelta(hours=9))

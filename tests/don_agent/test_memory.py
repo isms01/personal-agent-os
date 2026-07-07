@@ -6,6 +6,7 @@ from anthropic.types import TextBlock
 
 from app.core.context_classifier import InputContext, Topic
 from app.core.don_memory import (
+    DEFAULT_MEMORY_DIR,
     ConversationRecord,
     format_records,
     load_recent_records,
@@ -160,6 +161,18 @@ def test_load_missing_dir_returns_empty(tmp_path: Path) -> None:
     loaded = load_recent_records(count=10, memory_dir=tmp_path / "not_exist")
 
     assert loaded == []
+
+
+# --------------------------------------------------------------------------
+# DEFAULT_MEMORY_DIR
+# --------------------------------------------------------------------------
+
+
+def test_default_memory_dir_is_anchored_to_project_root() -> None:
+    # cwd に依存せず、常にプロジェクトルート配下の logs/don_memory を指す
+    project_root = Path(__file__).resolve().parent.parent.parent
+    assert DEFAULT_MEMORY_DIR.is_absolute()
+    assert project_root / "logs" / "don_memory" == DEFAULT_MEMORY_DIR
 
 
 # --------------------------------------------------------------------------
