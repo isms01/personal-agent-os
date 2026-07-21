@@ -47,3 +47,5 @@ personal-agent-os/
 ├── TODO.md
 └── progress-log.md
 ```
+
+評価関連を実装する
